@@ -1,6 +1,7 @@
 import { getRazorpayInstance } from "../config/payment.config.js";
 import paymentSchema from "../models/Payment.model.js"
-import Booking from "../models/booking.model.js";
+import Booking from "../models/Booking.model.js";
+import User from "../models/User.model.js"
 
 export const createPaymentOrder = async (req, res) => {
   try {
@@ -46,6 +47,35 @@ export const createPaymentOrder = async (req, res) => {
             { new: true }
           );
 
+          // Update User Remaining Budget
+
+          const user = await User.findById(req_data.user_id);
+          const amount = Number(req_data.amount);
+
+          // 👇 If remainingBudget is invalid (negative), reset it
+          let currentBudget;
+
+          if (user.remainingBudget !== undefined && user.remainingBudget >= 0) {
+            currentBudget = user.remainingBudget;
+          } else {
+            currentBudget = user.budget;
+          }
+
+          // ❌ block if exceeding
+          if (currentBudget < amount) {
+            return res.status(400).json({
+              message: "Insufficient budget"
+            });
+          }
+
+          const updatedRemaining = currentBudget - amount;
+
+          await User.findByIdAndUpdate(
+            req_data.user_id,
+            { remainingBudget: updatedRemaining },
+            { new: true }
+          );
+          
       }
 
     res.status(200).json(payment);

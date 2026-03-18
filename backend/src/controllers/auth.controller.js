@@ -1,6 +1,7 @@
 import User from "../models/User.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import Vendor from "../models/vendor-model.js";
 
 export const register = async (req, res) => {
   try {
@@ -21,6 +22,26 @@ export const register = async (req, res) => {
 
     user.save()
 
+    if (role === "vendor") {
+      const vendorName = user.name
+      const vendor = await Vendor.findOne({ name: vendorName });
+
+      if (!vendor) {
+        return res.status(404).json({
+          message: "Vendor business not found"
+        });
+      }
+      if (vendor.vendorId) {
+        return res.status(400).json({
+          message: "This vendor is already registered"
+        });
+      }
+
+      console.log(user._id)
+      vendor.vendorId = user._id;
+      await vendor.save();
+    }
+
     res.status(201).json({ message: "Registered successfully", user });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -31,7 +52,19 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    let user = await User.findOne({ email });
+
+    // Auto-create admin if trying to login with default admin credentials and user doesn't exist
+    if (!user && email === "admin@wedaura.com" && password === "admin123") {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user = await User.create({
+        name: "Admin",
+        email,
+        password: hashedPassword,
+        role: "admin",
+      });
+    }
+
     if (!user)
       return res.status(404).json({ message: "User not found" });
 
@@ -56,30 +89,38 @@ export const saveProfile = async (req, res) => {
 
 
   try {
-      const {
-        name,
-        email,
-        phone,
-        weddingDate,
-        weddingType,
-        budget,
-        location
-      } = req.body;
+    const {
+      name,
+      email,
+      phone,
+      bride,
+      groom,
+      address,
+      weddingDate,
+      weddingTime,
+      weddingType,
+      budget,
+      location
+    } = req.body;
 
     const updatedUser = await User.findOneAndUpdate(
-      { email: email },  
+      { email: email },
       {
         $set: {
           name,
           phone,
+          bride,
+          groom,
+          address,
           weddingDate,
+          weddingTime,
           weddingType,
           budget,
           location
         }
       },
       {
-        new: true,       
+        new: true,
         runValidators: true
       }
     );
@@ -110,7 +151,7 @@ export const getUserProfile = async (req, res) => {
     const user = await User.findById(userId);
     if (!user)
       return res.status(404).json({ message: "User not found" });
-     
+
     res.status(200).json({
       message: "User details updated successfully",
       user: user
@@ -121,7 +162,7 @@ export const getUserProfile = async (req, res) => {
     res.status(500).json({ message: "Update failed" });
   }
 };
-  
-    
+
+
 
 

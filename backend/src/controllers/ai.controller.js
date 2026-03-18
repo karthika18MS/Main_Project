@@ -1,6 +1,8 @@
 import { execFile } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
+import axios from "axios";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,8 +39,15 @@ export const predictBudget = async (req, res) => {
   }
 };
 
-export const recommendVendors = async (req, res) => {
-  res.json({
-    message: "Vendor recommendation via AI model",
-  });
+export const predictVendor = async (req, res) => {
+
+  const vendors = req.body.vendors;
+
+  const response = await axios.post(
+    "http://127.0.0.1:8000/predict",
+    { vendors }
+  );
+
+  res.json(response.data);
+
 };

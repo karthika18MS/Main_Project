@@ -13,6 +13,7 @@ const bookingSchema = new mongoose.Schema(
     price : Number,
     client: String,
     paymentStatus:String,
+    eventName : String,
     amount:Number,
     status: {
       type: String,
