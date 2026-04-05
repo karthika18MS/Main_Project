@@ -27,6 +27,16 @@ export const getVendorById = async (req, res) => {
   res.json(vendor);
 };
 
+export const getBookingByVendor = async (req, res) => {
+  console.log(req.body.vendorId)
+  const booking = await Booking.find({
+  vendorId: req.body.vendorId,
+  status : "completed"
+});
+  res.json(booking);
+};
+
+
 export const getBookingByVendorId = async (req, res) => {
   console.log(req.body.vendorId)
   const booking = await Booking.find({
@@ -45,141 +55,151 @@ export const getAllVendorBooking = async (req, res) => {
 };
 
 export const acceptBooking = async (req, res) => {
-   const booking = await Booking.findByIdAndUpdate(
-      req.body.bookingId,
-      { status: "accepted" },
-      { new: true } 
-    );
-    if(booking)
-    {
-              const to = "karthikams380@gmail.com"
-            const subject = "Booked Successfully"
-          const html = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-            <style>
+  try {
+    const { bookingId } = req.body;
 
-            body{
-              font-family: 'Segoe UI', Arial, sans-serif;
-              background:#f5f7fb;
-              padding:30px;
-            }
+    // 🔍 Get the current booking
+    const currentBooking = await Booking.findById(bookingId);
 
-            .container{
-              max-width:620px;
-              margin:auto;
-              background:#ffffff;
-              border-radius:14px;
-              overflow:hidden;
-              box-shadow:0 8px 25px rgba(0,0,0,0.08);
-            }
-
-            .header{
-              background:linear-gradient(135deg,#ff7eb3,#8a7dff);
-              color:white;
-              text-align:center;
-              padding:28px 20px;
-              font-size:26px;
-              font-weight:600;
-              letter-spacing:1px;
-            }
-
-            .content{
-              padding:35px;
-              color:#444;
-              line-height:1.7;
-              text-align:center;
-            }
-
-            .content h2{
-              margin-top:0;
-              color:#333;
-            }
-
-            .divider{
-              width:60px;
-              height:4px;
-              background:#ff7eb3;
-              margin:18px auto;
-              border-radius:3px;
-            }
-
-            .button{
-              display:inline-block;
-              padding:13px 26px;
-              background:#8a7dff;
-              color:white !important;
-              text-decoration:none;
-              border-radius:25px;
-              font-weight:500;
-              margin-top:20px;
-              transition:0.3s;
-            }
-
-            .footer{
-              text-align:center;
-              font-size:13px;
-              color:#888;
-              padding:18px;
-              background:#fafafa;
-              border-top:1px solid #eee;
-            }
-
-            </style>
-            </head>
-
-            <body>
-
-            <div class="container">
-
-              <div class="header">
-                WED AURA 💍
-              </div>
-
-              <div class="content">
-
-                <h2>Booking Accepted 🎉</h2>
-
-                <div class="divider"></div>
-
-                <p>Hello,</p>
-
-                <p>
-                  Your vendor booking has been <strong>successfully accepted</strong>.
-                  We’re excited to be part of your wedding journey.
-                </p>
-
-                <p>
-                  Our team and vendors will ensure everything is perfectly arranged
-                  for your special day.
-                </p>
-
-                <a href="http://localhost:3000/user-dashboard" class="button">
-                  View Booking Details
-                </a>
-
-                <p style="margin-top:28px;">
-                  Best wishes for a joyful and memorable wedding celebration 💕
-                </p>
-
-              </div>
-
-              <div class="footer">
-                © 2026 WED AURA · AI Powered Wedding Planning Platform
-              </div>
-
-            </div>
-
-            </body>
-            </html>
-            `;
-
-            sendEmail(to,subject,html)
+    if (!currentBooking) {
+      return res.status(404).json({ message: "Booking not found" });
     }
-  res.json(booking);
-};
 
+    // 🗓️ Normalize date to full day range (handles time issues)
+    const startOfDay = new Date(currentBooking.bookingDate);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(currentBooking.bookingDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // 🚫 Check if vendor already has accepted booking on same day
+    const existingBooking = await Booking.findOne({
+      vendorId: currentBooking.vendorId,
+      bookingDate: { $gte: startOfDay, $lte: endOfDay },
+      status: "accepted",
+    });
+
+    if (existingBooking) {
+      return res.status(400).json({
+        message: "This vendor already has a booking on this date",
+      });
+    }
+
+    // ✅ Accept the booking
+    const booking = await Booking.findByIdAndUpdate(
+      bookingId,
+      { status: "accepted" },
+      { new: true }
+    );
+
+    // 📧 Send email
+    if (booking) {
+      const to = "karthikams380@gmail.com";
+      const subject = "Booked Successfully";
+
+      const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+      <style>
+      body{
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background:#f5f7fb;
+        padding:30px;
+      }
+      .container{
+        max-width:620px;
+        margin:auto;
+        background:#ffffff;
+        border-radius:14px;
+        overflow:hidden;
+        box-shadow:0 8px 25px rgba(0,0,0,0.08);
+      }
+      .header{
+        background:linear-gradient(135deg,#ff7eb3,#8a7dff);
+        color:white;
+        text-align:center;
+        padding:28px 20px;
+        font-size:26px;
+        font-weight:600;
+      }
+      .content{
+        padding:35px;
+        color:#444;
+        line-height:1.7;
+        text-align:center;
+      }
+      .divider{
+        width:60px;
+        height:4px;
+        background:#ff7eb3;
+        margin:18px auto;
+        border-radius:3px;
+      }
+      .button{
+        display:inline-block;
+        padding:13px 26px;
+        background:#8a7dff;
+        color:white !important;
+        text-decoration:none;
+        border-radius:25px;
+        margin-top:20px;
+      }
+      .footer{
+        text-align:center;
+        font-size:13px;
+        color:#888;
+        padding:18px;
+        background:#fafafa;
+        border-top:1px solid #eee;
+      }
+      </style>
+      </head>
+
+      <body>
+      <div class="container">
+        <div class="header">WED AURA 💍</div>
+
+        <div class="content">
+          <h2>Booking Accepted 🎉</h2>
+          <div class="divider"></div>
+
+          <p>Hello,</p>
+
+          <p>
+            Your vendor booking has been <strong>successfully accepted</strong>.
+          </p>
+
+          <p>
+            We’re excited to be part of your wedding journey.
+          </p>
+
+          <a href="http://localhost:3000/user-dashboard" class="button">
+            View Booking Details
+          </a>
+
+          <p style="margin-top:28px;">
+            Best wishes for your wedding 💕
+          </p>
+        </div>
+
+        <div class="footer">
+          © 2026 WED AURA · AI Powered Wedding Planning Platform
+        </div>
+      </div>
+      </body>
+      </html>
+      `;
+
+      await sendEmail(to, subject, html);
+    }
+
+    res.json(booking);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 export const cancelBooking = async (req, res) => {
   const booking = await Booking.findByIdAndUpdate(
       req.body.bookingId,

@@ -12,7 +12,7 @@ import {
 } from "../controllers/vendor.controller.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
 import roleMiddleware from "../middlewares/role.middleware.js";
-import { getBookingByVendorId,getAllVendorBooking,getVendorStats } from "../controllers/vendor.controller.js";
+import { getBookingByVendorId,getAllVendorBooking,getVendorStats,getBookingByVendor } from "../controllers/vendor.controller.js";
 import { getNotifications } from "../controllers/notification.controller.js";
 import multer from "multer";
 
@@ -25,6 +25,11 @@ router.get("/:id",getVendorById);
 router.post("/booking", 
   authMiddleware,
   getBookingByVendorId
+);
+
+router.post("/fetchBooking", 
+  authMiddleware,
+  getBookingByVendor
 );
 
 router.post("/vendorBooking", 

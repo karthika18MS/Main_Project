@@ -5,7 +5,7 @@ echo Starting WED AURA Servers
 echo ===============================
 
 REM Start Backend Server
-start cmd /k "cd backend && npm start"
+start cmd /k "cd backend && npm run dev"
 
 REM Start Frontend Server
 start cmd /k "cd frontend && npm start"

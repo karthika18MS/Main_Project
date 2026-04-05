@@ -6,7 +6,7 @@ const chatSchema = new mongoose.Schema(
     sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     vendorId: String,
     userId: String,
-      message: [
+    message: [
       {
         role: {
           type: String,
@@ -22,6 +22,14 @@ const chatSchema = new mongoose.Schema(
         },
       },
     ],
+    isReadByVendor: {
+      type: Boolean,
+      default: true,
+    },
+    isReadByUser: {
+      type: Boolean,
+      default: true,
+    }
   },
   { timestamps: true }
 );

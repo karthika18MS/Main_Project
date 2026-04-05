@@ -1,0 +1,103 @@
+--- DEBUG START ---
+VENDOR Found: {
+  "_id": "6984780b1e8f08bfdf7739c4",
+  "name": "Royal Palace Venue ",
+  "category": "Venue",
+  "profilePic": "uploads\\4f7f0ae9b7ae5c121c42ae2d8a314be0",
+  "gallery": [
+    "uploads\\9d51433ee86e97d0a7081c880d2a3718",
+    "uploads\\57bb29cfa2ab72893499afe07bc97daa",
+    "uploads\\10cd7658e78f3efc132aa6132b6715a9"
+  ],
+  "availableTimings": {
+    "from": "9 AM",
+    "to": "11 PM"
+  },
+  "socialLinks": {
+    "facebook": "https://facebook.com/royalpalace",
+    "instagram": "https://instagram.com/royalpalace",
+    "website": "https://royalpalace.com"
+  },
+  "priceRates": {
+    "startingPrice": 150000,
+    "maxPrice": 350000
+  },
+  "packages": [
+    {
+      "name": "Silver",
+      "price": 180000,
+      "includes": [
+        "Hall",
+        "Basic Decor"
+      ],
+      "_id": "69ae8800ce53f194676368f4"
+    },
+    {
+      "name": "Gold",
+      "price": 280000,
+      "includes": [
+        "Hall",
+        "Premium Decor",
+        "Lighting"
+      ],
+      "_id": "69ae8800ce53f194676368f5"
+    }
+  ],
+  "reviews": [
+    {
+      "user": "Anjali",
+      "comment": "Beautiful venue",
+      "rating": 5,
+      "_id": "6984780b1e8f08bfdf7739c7"
+    },
+    {
+      "user": "Shilpa",
+      "comment": "test",
+      "rating": 5,
+      "_id": "69b7ac0056f87b180c6dcf3d"
+    }
+  ],
+  "rating": 5,
+  "location": {
+    "city": "Thrissur",
+    "state": "Kerala",
+    "address": "Amballur"
+  },
+  "createdAt": "2026-02-05T10:59:23.471Z",
+  "updatedAt": "2026-03-16T07:06:40.999Z",
+  "__v": 1,
+  "vendorId": "69940b9ce7def9e658f5ffea",
+  "instructions": [
+    "Guest count must not exceed venue capacity",
+    "Decorations must not damage the property",
+    "Music must follow local noise regulations",
+    "Event activities must follow the booked time slot"
+  ]
+}
+CHATS found by vendorId field (69940b9ce7def9e658f5ffea): 3
+CHATS found by _id string (6984780b1e8f08bfdf7739c4): 0
+SAMPLE CHATS (first 10): [
+  {
+    "vId": "69940b9ce7def9e658f5ffea",
+    "uId": "698460fc223bf763b14a4d8d"
+  },
+  {
+    "vId": "69b28e28db6efe3e4c5d4180",
+    "uId": "69babcaa8ec1d66b68a6922d"
+  },
+  {
+    "vId": "69940b9ce7def9e658f5ffea",
+    "uId": "69babcaa8ec1d66b68a6922d"
+  },
+  {
+    "vId": "69940b9ce7def9e658f5ffea",
+    "uId": "69c0b8921f942871db061f01"
+  }
+]
+USERS with same name: [
+  {
+    "name": "Royal Palace Venue",
+    "_id": "69940b9ce7def9e658f5ffea",
+    "role": "vendor"
+  }
+]
